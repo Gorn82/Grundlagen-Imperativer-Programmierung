@@ -3,6 +3,6 @@ Kurs 1613
 
 Code bitte in die entsprechenden Unterordner ablegen. 
 
-Beim Editieren von Datein anderer Personen bitte einen neuen Branch erstellen. 
+Beim Editieren von Dateien anderer Personen bitte einen neuen Branch erstellen. 
 
 Dankeee!
