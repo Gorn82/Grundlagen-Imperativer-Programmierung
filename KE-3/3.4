@@ -1,0 +1,150 @@
+program TesteSortiereListe(input, output);
+{ testet die Prozedur TesteSortiereListe }
+  type
+  tNatZahl = 0..maxint;
+  tRefListe = ^tListe;
+  tListe = record
+             info : tNatZahl;
+             next : tRefListe;
+           end;
+
+  var
+  RefListe : tRefListe;
+
+  procedure SortiereListe (var ioRefListe : tRefListe);
+  { sortiert eine lineare Liste aufsteigend }
+
+    var
+    Start,
+    Ende,
+    Tausch,
+    Suche,
+    Element : tRefListe;
+
+    procedure TauschZeiger (var ioZeiger1,
+                              ioZeiger2 : tRefliste);
+    { tauscht Verweise zweier Zeiger }
+
+    begin
+        Tausch := ioZeiger1;
+        ioZeiger1 := ioZeiger2;
+        ioZeiger2 := Tausch;
+    end; { TauschZeiger }
+
+  begin
+  Start := ioRefListe;
+  if (Start = nil) or (Start^.next = nil) then 
+    begin
+    
+    end { if, beendet SortiereListe, Programm wird bei GibListeAus fortgesetzt }
+  else  
+  if (ioRefListe <> nil) and (ioRefListe^.next <> nil) then
+  { wenn Liste leer oder nur 1 Element, keine Sortierung }
+    begin
+        Start := ioRefListe;
+        Ende := ioRefListe^.next;
+        if Ende^.info < Start^.info then { Sortiere erste zwei Elemente}
+            begin
+                Start^.next := Ende^.next;
+                Ende^.next := Start;
+                TauschZeiger (Ende, Start);
+            end; { if }
+    while Ende^.next <> nil do
+        begin
+        Element := Ende^.next;
+        if Element^.info > Ende^.info then
+        { Anhängen des letzten zu sortierenden Elements an sortierte Liste }
+            Ende := Ende^.next
+        else
+        if Element^.info < Start^.info then
+            begin
+            { Anhängen des zu sortierenden Elements am Anfang der sortierten Liste }
+            Tausch := Element^.next;
+            Element^.next := Start;
+            Ende^.next := Tausch;
+            TauschZeiger (Start, Element);
+        end { if }
+        else
+            begin
+            Suche := Start;
+            while Suche^.next^.info < Element^.info do
+                Suche := Suche^.next; { Durchlauf bis Bedingung erfüllt ist }
+                { Einfügen des zu sortierenden Elements in die sortierte Liste }
+                Tausch := Element^.next;
+                Element^.next := Suche^.next;
+                Suche^.next := Element;
+                Ende^.next := Tausch;
+        end; { else }
+    end; { while }
+    ioRefListe := Start;
+  end; { if }
+ end; {SortiereListe }
+
+procedure Anhaengen(    inZahl : tNatZahl;
+                    var ioListe : tRefListe);
+{ Haengt inZahl an ioListe an }
+  var Zeiger : tRefListe;
+begin
+  Zeiger := ioListe;
+  if Zeiger = nil then
+  begin
+    new(ioListe);
+    ioListe^.info := inZahl;
+    ioListe^.next := nil;
+  end
+  else
+  begin
+    while Zeiger^.next <> nil do
+      Zeiger := Zeiger^.next;
+    { Jetzt zeigt Zeiger auf das letzte Element }
+    new(Zeiger^.next);
+    Zeiger := Zeiger^.next;
+    Zeiger^.info := inZahl;
+    Zeiger^.next := nil;
+  end; { if }
+end; { Anhaengen }
+
+
+procedure ListeEinlesen(var outListe:tRefListe);
+{ liest eine durch -1 abgeschlossene Folge von Integer-
+  Zahlen ein und speichert diese in der linearen Liste RefListe. }
+  var
+  Liste : tRefListe;
+  Zeile : string;
+  Zahl, Code : integer;
+begin
+  Liste := nil;
+  read(Zahl);
+  
+  while Zahl<>-1 do
+  begin
+    Anhaengen(Zahl, Liste);
+    read(Zahl)
+  end; { while }
+  outListe := Liste
+end; { ListeEinlesen }
+
+procedure GibListeAus(inListe : tRefListe);
+{ Gibt die Elemente von inListe aus }
+  var Zeiger : tRefListe;
+begin
+  if inListe = nil then 
+  begin
+    writeln('Liste leer');
+  end
+  else 
+  begin
+    Zeiger := inListe;
+    while Zeiger <> nil do
+    begin
+      writeln(Zeiger^.info);
+      Zeiger := Zeiger^.next;
+    end; { while }    
+  end;  
+end; { GibListeAus }
+
+begin
+  ListeEinlesen(RefListe);
+  SortiereListe(RefListe);
+  GibListeAus(RefListe)
+end. { TesteSortiereListe }
